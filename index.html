@@ -136,7 +136,18 @@
 
             const user = data.User.Profile;
             const listItem = document.createElement('li');
-            resultsList.appendChild(`<p>${user.stats.aStats.completed}</p>`);
+            listItem.innerHTML = `
+                <h3>Hakkında</h3>
+                <p>${user.modern_about_text}</p>
+                <img src="${user.modern_about_img}" alt="Profile Image" style="width: 100%;">
+                <h3>Arkadaşlar</h3>
+                <p>${user.friends}</p>
+                <h3>Istatistikler</h3>
+                <p>Tamamlanan Anime: ${user.stats.aStats.completed}</p>
+                <p>Izlenen Gün: ${user.stats.aStats.days}</p>
+                <p>Ortalama Puan: ${user.stats.aStats.mean}</p>
+            `;
+            resultsList.appendChild(listItem);
         }
 
         function handleInput(event) {
