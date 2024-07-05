@@ -101,7 +101,7 @@
 </head>
 <body>
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Arama yap..." oninput="handleInput(event)" onkeydown="handleKeyDown(event)">
+        <input type="text" id="searchInput" placeholder="Kullanıcı adı girin..." oninput="handleInput(event)" onkeydown="handleKeyDown(event)">
         <button id="searchButton" onclick="search()">Ara</button>
         <button id="clearButton" onclick="clearSearch()">X</button>
     </div>
@@ -111,37 +111,43 @@
     <script>
         async function search() {
             const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
-            const resultsList = document.getElementById('results');
-            const noResultsMessage = document.getElementById('noResults');
-
-            if (searchInput === '') {
-                resultsList.innerHTML = '';
-                noResultsMessage.style.display = 'none';
-                return;
-            }
-
+            const apiUrl = `https://kyoya-api-x3a1.vercel.app/api/mal?user=${searchInput}&skip=true`;
+            
             try {
-                // VERI CEKME ISLEMI BURADAN YAPILACAK
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayResults(data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
 
-        function displayResults(results) {
+        function displayResults(data) {
             const resultsList = document.getElementById('results');
             const noResultsMessage = document.getElementById('noResults');
-
             resultsList.innerHTML = '';
-            if (results.length === 0) {
+
+            if (!data || !data.User || !data.User.Profile) {
                 noResultsMessage.style.display = 'block';
-            } else {
-                noResultsMessage.style.display = 'none';
-                results.forEach(result => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = result.title;
-                    resultsList.appendChild(listItem);
-                });
+                return;
             }
+
+            noResultsMessage.style.display = 'none';
+
+            const user = data.User.Profile;
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <h3>Hakkında</h3>
+                <p>${user.modern_about_text}</p>
+                <img src="${user.modern_about_img}" alt="Profile Image" style="width: 100%;">
+                <h3>Arkadaşlar</h3>
+                <p>${user.friends}</p>
+                <h3>Istatistikler</h3>
+                <p>Tamamlanan Anime: ${user.stats.aStats.completed}</p>
+                <p>Izlenen Gün: ${user.stats.aStats.days}</p>
+                <p>Ortalama Puan: ${user.stats.aStats.mean}</p>
+            `;
+            resultsList.appendChild(listItem);
         }
 
         function handleInput(event) {
@@ -154,7 +160,6 @@
             const clearButton = document.getElementById('clearButton');
             if (searchInput !== '') {
                 clearButton.classList.add('show');
-                search();
             } else {
                 clearButton.classList.remove('show');
                 document.getElementById('results').innerHTML = '';
