@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            position: relative;
+        }
+        
+        #searchInput {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        #searchButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #clearButton {
+            background-color: transparent;
+            color: #666;
+            border: none;
+            padding: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            right: 75px;
+            display: none;
+        }
+
+        @keyframes changeColor {
+            0% { color: #FF5733; }
+            25% { color: #DAF7A6; }
+            50% { color: #C70039; }
+            75% { color: #FFC300; }
+            100% { color: #900C3F; }
+        }
+
+        #clearButton.show {
+            display: inline-block;
+            animation: changeColor 5s infinite alternate;
+        }
+        
+        #results {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 400px;
+        }
+        
+        #results li {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        #noResults {
+            color: #666;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Arama yap..." oninput="handleInput(event)" onkeydown="handleKeyDown(event)">
+        <button id="searchButton" onclick="search()">Ara</button>
+        <button id="clearButton" onclick="clearSearch()">X</button>
+    </div>
+    <ul id="results"></ul>
+    <p id="noResults">Sonuç bulunamadı.</p>
+
+    <script>
+        const data = [
+            "anime",
+          "manga",
+          "firefly",
+          "overrated"
+        ];
+
+        function search() {
+            const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+            const results = data.filter(item => item.toLowerCase().includes(searchInput));
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const resultsList = document.getElementById('results');
+            const noResultsMessage = document.getElementById('noResults');
+
+            resultsList.innerHTML = '';
+            if (results.length === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+                results.forEach(result => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = result;
+                    resultsList.appendChild(listItem);
+                });
+            }
+        }
+
+        function handleInput(event) {
+            let char = event.data;
+            if (char && !char.match(/[a-zA-Z ]/)) {
+                event.target.value = event.target.value.replace(/[^a-zA-Z ]/g, '');
+            }
+            
+            const searchInput = event.target.value.trim();
+            const clearButton = document.getElementById('clearButton');
+            if (searchInput !== '') {
+                clearButton.classList.add('show');
+                search();
+            } else {
+                clearButton.classList.remove('show');
+                document.getElementById('results').innerHTML = '';
+                document.getElementById('noResults').style.display = 'none';
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearButton').classList.remove('show');
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                search();
+            }
+        }
+    </script>
+</body>
+</html>
