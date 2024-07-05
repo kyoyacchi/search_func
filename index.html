@@ -109,17 +109,22 @@
     <p id="noResults">Sonuç bulunamadı.</p>
 
     <script>
-        const data = [
-            "anime",
-          "manga",
-          "firefly",
-          "overrated"
-        ];
-
-        function search() {
+        async function search() {
             const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
-            const results = data.filter(item => item.toLowerCase().includes(searchInput));
-            displayResults(results);
+            const resultsList = document.getElementById('results');
+            const noResultsMessage = document.getElementById('noResults');
+
+            if (searchInput === '') {
+                resultsList.innerHTML = '';
+                noResultsMessage.style.display = 'none';
+                return;
+            }
+
+            try {
+                // VERI CEKME ISLEMI BURADAN YAPILACAK
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
 
         function displayResults(results) {
@@ -133,7 +138,7 @@
                 noResultsMessage.style.display = 'none';
                 results.forEach(result => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = result;
+                    listItem.textContent = result.title;
                     resultsList.appendChild(listItem);
                 });
             }
